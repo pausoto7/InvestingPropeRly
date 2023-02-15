@@ -4,6 +4,15 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @noRd
+#'
+
+
+
+data('scotia_morgage_doc')
+
+
+
+
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
