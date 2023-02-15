@@ -1,0 +1,13 @@
+Package: InvestingPropeRly
+Title: InvestingPropeRly
+Version: 0.0.0.9000
+Authors@R: person('Paula', 'Soto', email = 'paula.sooto@gmail.com', role = c('cre', 'aut'))
+Description: Package which enables handling investment property with ease
+License: MIT + file LICENSE
+Imports: 
+    config (>= 0.3.1),
+    golem (>= 0.3.5),
+    shiny (>= 1.7.3)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
