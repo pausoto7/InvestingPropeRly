@@ -20,11 +20,11 @@
 ##
 golem::fill_desc(
   pkg_name = "InvestingPropeRly", # The Name of the package containing the App
-  pkg_title = "PKG_TITLE", # The Title of the package containing the App
-  pkg_description = "PKG_DESC.", # The Description of the package containing the App
-  author_first_name = "AUTHOR_FIRST", # Your First Name
-  author_last_name = "AUTHOR_LAST", # Your Last Name
-  author_email = "AUTHOR@MAIL.COM", # Your Email
+  pkg_title = "InvestingPropeRly", # The Title of the package containing the App
+  pkg_description = "Package which enables handling investment property with ease", # The Description of the package containing the App
+  author_first_name = "Paula", # Your First Name
+  author_last_name = "Soto", # Your Last Name
+  author_email = "paula.sooto@gmail.com", # Your Email
   repo_url = NULL # The URL of the GitHub Repo (optional)
 )
 
