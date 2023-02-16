@@ -8,7 +8,6 @@
 
 
 
-data('scotia_morgage_doc')
 
 
 

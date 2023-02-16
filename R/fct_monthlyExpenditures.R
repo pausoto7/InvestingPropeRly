@@ -49,21 +49,96 @@ net_income_summary <- function(monthly_cost_df, sum_property_md_lookup){
 
 }
 
-
+property_colours <- data.frame(PropertyNickname = c("Woodward", "Murphy", "Home"),
+                               colour = c("deeppink4", "sienna3", "cyan4"))
 
 
 
 # monthly cost
-ggplot() +
-  geom_line(data = monthly_cost_df, aes(x = lubridate::ymd(Date), y = total )) +
-  scale_x_date(name = "Date") +
-  theme_bw()
+
+cost_bar_plot <- function(){
+  ggplot() +
+    geom_col(data = monthly_cost_df, aes(x = month, y = costs_total, group= as.character(year),
+                                         fill = as.character(year)),
+             position = position_dodge2(width = 1, preserve = "single"),
+             color = "black") +
+    scale_fill_brewer(palette = "BrBG") +
+    scale_y_reverse()+
+    theme_bw()
+
+}
+
+
 
 #monthly income
 
 
-ggplot() +
-  geom_line(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income )) +
-  scale_x_date(name = "Date") +
-  theme_bw()
+net_income_plot <- function(nickname, startdate, enddate){
+
+  appropriate_color <- property_colours$colour[which(property_colours$PropertyNickname == nickname)]
+
+  plot <- ggplot() +
+    geom_line(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
+              size = 1, color = appropriate_color) +
+    geom_point(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
+               size = 2, color = appropriate_color )+
+    geom_hline(yintercept=0)+
+    geom_vline(xintercept = as.Date("2022-01-01")) +
+    annotate("text",x = as.Date("2021-12-27"), y =-500, label = "2022", angle = 90) +
+    geom_vline(xintercept = as.Date("2023-01-01")) +
+    annotate("text",x = as.Date("2022-12-27"), y =-500, label = "2023", angle = 90) +
+    scale_x_date(name = "Date",
+                 date_breaks = "2 months",
+                 date_minor_breaks = "1 month",
+                 date_labels = "%b\n%Y",
+                 limits = c(startdate, enddate)) +
+    scale_y_continuous(name = "Cost ($)") +
+    theme_bw() +
+    theme(panel.grid.minor.y = element_blank())
+
+  plot <- plot %>%
+    plotly::style(hoverinfo = "y")
+
+  return(plot)
+}
+
+
+
+
+
+# ggplot() +
+#   geom_line(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income ), size = 1, color = "red") +
+#   geom_point(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),  size = 2, color = "red" )+
+#   geom_hline(yintercept=0)+
+#   scale_x_date(name = "Date", date_breaks = "1 year", date_minor_breaks = "2 month", date_labels = "%Y %b",
+#                limits = c(as.Date("2022-03-01"), as.Date("2022-12-01"))) +
+#   theme_bw() +
+#   theme(panel.grid.minor.y = element_blank())
+
+
+
+
+
+
+
+#
+# hc_all_monthly_summary <- all_monthly_summary %>%
+#   select(Date, net_monthly_income) %>%
+#   mutate(Date = lubridate::ymd(Date))
+#
+# highcharter::highchart(type = "stock") %>%
+#   highcharter::hc_add_series(highcharter::hcaes(x = as.Date(all_monthly_summary$Date),
+#                                                 y = all_monthly_summary$net_monthly_income))
+#
+#
+#
+# all_monthly_summary$Date <- lubridate::ymd(all_monthly_summary$Date)
+#
+# all_monthly_summary %>%
+#   highcharter::hchart(.,
+#                       type = "line",
+#                       hcaes(x = Date,
+#                             y = net_monthly_income))
+#
+
 
