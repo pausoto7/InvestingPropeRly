@@ -1,21 +1,22 @@
 
 
 
-scotia_morgage_doc_raw <- utils::read.csv("data-raw/pcbanking_woodward.csv", header = FALSE)
+scotia_mortgage_doc_raw <- utils::read.csv("data-raw/pcbanking_woodward.csv", header = FALSE)
 
-colnames(scotia_morgage_doc_raw) <- c("Date", "Amount", "Dash", "Type", "OtherInfo")
-scotia_morgage_doc_raw <- dplyr::select(scotia_morgage_doc_raw, -Dash)
+colnames(scotia_mortgage_doc_raw) <- c("Date", "Amount", "Dash", "Type", "OtherInfo")
+scotia_mortgage_doc_raw <- dplyr::select(scotia_mortgage_doc_raw, -Dash)
 
-scotia_morgage_doc_raw$Date <- lubridate::mdy(scotia_morgage_doc_raw$Date)
+scotia_mortgage_doc_raw$Date <- lubridate::mdy(scotia_mortgage_doc_raw$Date)
 
 
-scotia_morgage_doc <- scotia_morgage_doc_raw %>%
+scotia_mortgage_doc <- scotia_mortgage_doc_raw %>%
   dplyr::mutate(OtherInfo = stringr::str_trim(OtherInfo)) %>%
   filter(OtherInfo != "MANULIFE",
-         OtherInfo != "ICBC")
+         OtherInfo != "ICBC",
+         Type != "WITHDRAWAL")
 
 
-usethis::use_data(scotia_morgage_doc, overwrite = TRUE)
+usethis::use_data(scotia_mortgage_doc, overwrite = TRUE)
 
 
 

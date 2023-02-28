@@ -6,9 +6,11 @@
 #'
 #' @noRd
 
+data('scotia_mortgage_doc')
+data('property_md_lookup')
 
-property_raw_file <-scotia_morgage_doc
-nickname <- "Woodward"
+# property_raw_file <-scotia_mortgage_doc
+# nickname <- "Woodward"
 
 
 monthly_cost_summary <- function(property_raw_file, nickname){
@@ -46,7 +48,7 @@ net_income_summary <- function(monthly_cost_df, sum_property_md_lookup){
     left_join(sum_property_md_lookup_clean) %>%
     mutate(net_monthly_income = TotalPropertyRent*(1-PropertyManagerPercFee) + costs_total) #(costs are in negative's which is why we're adding)
 
-
+  return(all_monthly_summary)
 }
 
 property_colours <- data.frame(PropertyNickname = c("Woodward", "Murphy", "Home"),
@@ -56,7 +58,11 @@ property_colours <- data.frame(PropertyNickname = c("Woodward", "Murphy", "Home"
 
 # monthly cost
 
-cost_bar_plot <- function(){
+cost_bar_plot <- function(property_raw_file, nickname){
+
+
+  monthly_cost_df <- monthly_cost_summary(property_raw_file, nickname)
+
   ggplot() +
     geom_col(data = monthly_cost_df, aes(x = month, y = costs_total, group= as.character(year),
                                          fill = as.character(year)),
@@ -73,7 +79,9 @@ cost_bar_plot <- function(){
 #monthly income
 
 
-net_income_plot <- function(nickname, startdate, enddate){
+net_income_plot <- function(property_raw_file, nickname, startdate, enddate, sum_property_md_lookup){
+
+  all_monthly_summary <- net_income_summary(monthly_cost_summary(property_raw_file, nickname), sum_property_md_lookup)
 
   appropriate_color <- property_colours$colour[which(property_colours$PropertyNickname == nickname)]
 

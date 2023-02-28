@@ -12,7 +12,7 @@
 # mod_landing_page_ui <- function(id){
 #
 # }
-data('scotia_morgage_doc')
+data('scotia_mortgage_doc')
 
 mod_landing_page_ui <- fluidPage(
   shinydashboard::dashboardSidebar(),
@@ -68,26 +68,26 @@ mod_landing_page_server <- function(input, output, session){
 
   output$daterange <- renderUI({
     dateRangeInput("daterange", "Select the date range:",
-                   start = as.Date(min(scotia_morgage_doc$Date), format = "%M %dd %yyyy"),
-                   end = as.Date(max(scotia_morgage_doc$Date), format = "%M %dd %yyyy"),
-                   min = as.Date(min(scotia_morgage_doc$Date), format = "%M %dd %yyyy"),
-                   max = as.Date(max(scotia_morgage_doc$Date), format = "%M %dd %yyyy")
+                   start = as.Date(min(scotia_mortgage_doc$Date), format = "%M %dd %yyyy"),
+                   end = as.Date(max(scotia_mortgage_doc$Date), format = "%M %dd %yyyy"),
+                   min = as.Date(min(scotia_mortgage_doc$Date), format = "%M %dd %yyyy"),
+                   max = as.Date(max(scotia_mortgage_doc$Date), format = "%M %dd %yyyy")
     )
   })
 
 # make bar plot
   output$linegraph <- plotly::renderPlotly({
-    net_income_plot(input$NicknameID, input$daterange[1], input$daterange[2])
+    net_income_plot(scotia_mortgage_doc, input$NicknameID, input$daterange[1], input$daterange[2], sum_property_md_lookup)
 
 })
 
   output$bargraph <- renderPlot({
-    cost_bar_plot()
+    cost_bar_plot(scotia_mortgage_doc, input$NicknameID)
 
   })
 
   output$costdata <- renderTable(
-    nearPoints(monthly_cost_df, input$plot_click, xvar = "month", yvar = "costs_total")
+    nearPoints(monthly_cost_summary(scotia_mortgage_doc, input$NicknameID), input$plot_click, xvar = "month", yvar = "costs_total")
 
   )
 
