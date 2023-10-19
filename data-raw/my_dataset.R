@@ -25,3 +25,4 @@ property_md_lookup <- utils::read.csv("data-raw/property_metadata_lookup.csv")
 
 
 usethis::use_data(property_md_lookup, overwrite = TRUE)
+

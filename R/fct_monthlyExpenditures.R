@@ -68,7 +68,7 @@ cost_bar_plot <- function(property_raw_file, nickname){
                                          fill = as.character(year)),
              position = position_dodge2(width = 1, preserve = "single"),
              color = "black") +
-    scale_fill_brewer(palette = "BrBG") +
+    scale_fill_brewer(palette = "Spectral") +
     scale_y_reverse()+
     theme_bw()
 
