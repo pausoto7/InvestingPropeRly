@@ -12,6 +12,7 @@
 # mod_landing_page_ui <- function(id){
 #
 # }
+
 data('scotia_mortgage_doc')
 
 mod_landing_page_ui <- fluidPage(
