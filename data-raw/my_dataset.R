@@ -4,7 +4,7 @@
 scotia_mortgage_doc_raw <- utils::read.csv("data-raw/pcbanking_woodward.csv", header = FALSE)
 
 colnames(scotia_mortgage_doc_raw) <- c("Date", "Amount", "Dash", "Type", "OtherInfo")
-scotia_mortgage_doc_raw <- dplyr::select(scotia_mortgage_doc_raw, -Dash)
+scotia_mortgage_doc_raw <- dplyr::select(scotia_mortgage_doc_raw, c("Date", "Amount", "Dash", "Type", "OtherInfo"))
 
 scotia_mortgage_doc_raw$Date <- lubridate::mdy(scotia_mortgage_doc_raw$Date)
 
@@ -13,7 +13,8 @@ scotia_mortgage_doc <- scotia_mortgage_doc_raw %>%
   dplyr::mutate(OtherInfo = stringr::str_trim(OtherInfo)) %>%
   filter(OtherInfo != "MANULIFE",
          OtherInfo != "ICBC",
-         Type != "WITHDRAWAL")
+         OtherInfo != "MB-CREDIT CARD/LOC PAY.",
+         Type != "WITHDRAWAL             ")
 
 
 usethis::use_data(scotia_mortgage_doc, overwrite = TRUE)
@@ -21,8 +22,13 @@ usethis::use_data(scotia_mortgage_doc, overwrite = TRUE)
 
 
 
-property_md_lookup <- utils::read.csv("data-raw/property_metadata_lookup.csv")
+property_md_lookup <- utils::read.csv("data-raw/property_metadata_lookup_20231020.csv")
 
+
+property_md_lookup <- pivot_longer(property_md_lookup,
+                                        cols = January:December,
+                                        names_to = "month",
+                                        values_to = "Rent")
 
 usethis::use_data(property_md_lookup, overwrite = TRUE)
 

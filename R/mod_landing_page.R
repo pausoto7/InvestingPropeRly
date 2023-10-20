@@ -78,7 +78,7 @@ mod_landing_page_server <- function(input, output, session){
 
 # make bar plot
   output$linegraph <- plotly::renderPlotly({
-    net_income_plot(scotia_mortgage_doc, input$NicknameID, input$daterange[1], input$daterange[2], sum_property_md_lookup)
+    net_income_plot(scotia_mortgage_doc, input$NicknameID, input$daterange[1], input$daterange[2], sum_property_md_lookup_clean)
 
 })
 

@@ -31,18 +31,48 @@ return(monthly_cost_df)
 }
 
 
-sum_property_md_lookup <- property_md_lookup %>%
-  group_by(PropertyNickname, RentYear) %>%
-  mutate(TotalPropertyRent = sum(RentAmount))
 
+full_month_to_abbrev <- function(full_month_name) {
+  month_mapping <- c(
+    "January" = "Jan",
+    "February" = "Feb",
+    "March" = "Mar",
+    "April" = "Apr",
+    "May" = "May",
+    "June" = "Jun",
+    "July" = "Jul",
+    "August" = "Aug",
+    "September" = "Sep",
+    "October" = "Oct",
+    "November" = "Nov",
+    "December" = "Dec"
+  )
 
+  return(month_mapping[full_month_name])
+}
 
-net_income_summary <- function(monthly_cost_df, sum_property_md_lookup){
+create_clean_lookup <- function(property_md_lookup){
+
+  sum_property_md_lookup <- property_md_lookup %>%
+    group_by(month, PropertyNickname, Year) %>%
+    mutate(TotalPropertyRent = sum(Rent))
 
   sum_property_md_lookup_clean <- sum_property_md_lookup %>%
-    select(-RentalPropertyAddress, -UnitNum, -RentAmount) %>%
+    select( -UnitNum, -Rent) %>%
     unique() %>%
-    rename(year = RentYear)
+    rename(year = Year) %>%
+    mutate(month = full_month_to_abbrev(month))
+
+  return(sum_property_md_lookup_clean)
+}
+
+
+
+
+net_income_summary <- function(monthly_cost_df, sum_property_md_lookup_clean){
+
+
+  PropertyManagerPercFee <- 0.08
 
   all_monthly_summary <- monthly_cost_df %>%
     left_join(sum_property_md_lookup_clean) %>%
@@ -50,6 +80,7 @@ net_income_summary <- function(monthly_cost_df, sum_property_md_lookup){
 
   return(all_monthly_summary)
 }
+
 
 property_colours <- data.frame(PropertyNickname = c("Woodward", "Murphy", "Home"),
                                colour = c("deeppink4", "sienna3", "cyan4"))
@@ -79,9 +110,9 @@ cost_bar_plot <- function(property_raw_file, nickname){
 #monthly income
 
 
-net_income_plot <- function(property_raw_file, nickname, startdate, enddate, sum_property_md_lookup){
+net_income_plot <- function(property_raw_file, nickname, startdate, enddate, sum_property_md_lookup_clean){
 
-  all_monthly_summary <- net_income_summary(monthly_cost_summary(property_raw_file, nickname), sum_property_md_lookup)
+  all_monthly_summary <- net_income_summary(monthly_cost_summary(property_raw_file, nickname), sum_property_md_lookup_clean)
 
   appropriate_color <- property_colours$colour[which(property_colours$PropertyNickname == nickname)]
 
