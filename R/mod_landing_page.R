@@ -62,10 +62,6 @@ mod_landing_page_server <- function(input, output, session){
     paste("You chose", input$variable)
   })
 
-  # map
-  # output$myMap  <- leaflet::renderLeaflet({
-  #   caribouMap(input$variable)
-  # })
 
   output$daterange <- renderUI({
     dateRangeInput("daterange", "Select the date range:",
@@ -76,19 +72,29 @@ mod_landing_page_server <- function(input, output, session){
     )
   })
 
+  selectInput("year", "Select a Year:",
+              choices = 2020:2030,
+              selected = 2023
+  )
+
+
+})
+
+
 # make bar plot
   output$linegraph <- plotly::renderPlotly({
-    net_income_plot(scotia_mortgage_doc, input$NicknameID, input$daterange[1], input$daterange[2], sum_property_md_lookup_clean)
+    net_income_plot(scotia_mortgage_doc, input$daterange[1], input$daterange[2],
+                    sum_property_md_lookup_clean)
 
 })
 
   output$bargraph <- renderPlot({
-    cost_bar_plot(scotia_mortgage_doc, input$NicknameID)
+    cost_bar_plot(scotia_mortgage_doc, input$year, input$costType)
 
   })
 
   output$costdata <- renderTable(
-    nearPoints(monthly_cost_summary(scotia_mortgage_doc, input$NicknameID), input$plot_click, xvar = "month", yvar = "costs_total")
+    nearPoints(monthly_cost_summary(scotia_mortgage_doc), input$plot_click, xvar = "month", yvar = "costs_total")
 
   )
 

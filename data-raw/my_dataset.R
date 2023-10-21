@@ -8,13 +8,17 @@ scotia_mortgage_doc_raw <- dplyr::select(scotia_mortgage_doc_raw, c("Date", "Amo
 
 scotia_mortgage_doc_raw$Date <- lubridate::mdy(scotia_mortgage_doc_raw$Date)
 
+scotia_mortgage_doc_raw$OtherInfo <- iconv(scotia_mortgage_doc_raw$OtherInfo, from = "UTF-8", to = "UTF-8", sub = "")
 
 scotia_mortgage_doc <- scotia_mortgage_doc_raw %>%
+  mutate(Type = trimws(Type),
+         OtherInfo = trimws(OtherInfo)) %>%
   dplyr::mutate(OtherInfo = stringr::str_trim(OtherInfo)) %>%
   filter(OtherInfo != "MANULIFE",
          OtherInfo != "ICBC",
-         OtherInfo != "MB-CREDIT CARD/LOC PAY.",
-         Type != "WITHDRAWAL             ")
+         OtherInfo != "MB-CREDIT CARD/LOC PAY",
+         Type != "WITHDRAWAL") %>%
+  mutate(TypeAndInfo = paste(Type, OtherInfo))
 
 
 usethis::use_data(scotia_mortgage_doc, overwrite = TRUE)

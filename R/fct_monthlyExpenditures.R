@@ -13,7 +13,7 @@ data('property_md_lookup')
 # nickname <- "Woodward"
 
 
-monthly_cost_summary <- function(property_raw_file, nickname){
+monthly_cost_summary <- function(property_raw_file){
 
   monthly_cost_df <- property_raw_file %>%
     filter(Date > as.Date("2021-07-01")) %>%
@@ -22,9 +22,7 @@ monthly_cost_summary <- function(property_raw_file, nickname){
     summarize(costs_total = sum(Amount)) %>%
     ungroup() %>%
     mutate(Date = paste(as.character(year), month, "01", sep = "-"),
-           fake_date_for_plotting = paste("2000", month, "01", sep = "-")) %>%
-    mutate(PropertyNickname = nickname, .before = year)
-
+           fake_date_for_plotting = paste("2000", month, "01", sep = "-"))
 return(monthly_cost_df)
 
 
@@ -71,12 +69,16 @@ create_clean_lookup <- function(property_md_lookup){
 
 net_income_summary <- function(monthly_cost_df, sum_property_md_lookup_clean){
 
+  sum_property_rents <- sum_property_md_lookup_clean %>%
+    group_by(year, month) %>%
+    summarise(TotalMonthRent = sum(TotalPropertyRent))
 
-  PropertyManagerPercFee <- 0.08
+
+  PropertyManagerPercFee <- 0.09
 
   all_monthly_summary <- monthly_cost_df %>%
-    left_join(sum_property_md_lookup_clean) %>%
-    mutate(net_monthly_income = TotalPropertyRent*(1-PropertyManagerPercFee) + costs_total) #(costs are in negative's which is why we're adding)
+    left_join(sum_property_rents) %>%
+    mutate(net_monthly_income = TotalMonthRent*(1-PropertyManagerPercFee) + costs_total) #(costs are in negative's which is why we're adding)
 
   return(all_monthly_summary)
 }
@@ -89,10 +91,26 @@ property_colours <- data.frame(PropertyNickname = c("Woodward", "Murphy", "Home"
 
 # monthly cost
 
-cost_bar_plot <- function(property_raw_file, nickname){
+cost_bar_plot <- function(property_raw_file, year, costType){
 
 
-  monthly_cost_df <- monthly_cost_summary(property_raw_file, nickname)
+  if (year != "all"){
+
+    property_raw_file <- property_raw_file %>%
+      mutate(rentYear = lubridate::year(Date)) %>%
+      filter(rentYear == year)
+
+  }
+
+  if (costType != "all"){
+
+    property_raw_file <- property_raw_file %>%
+      filter(Type == TypeAndInfo)
+
+  }
+
+
+  monthly_cost_df <- monthly_cost_summary(property_raw_file)
 
   ggplot() +
     geom_col(data = monthly_cost_df, aes(x = month, y = costs_total, group= as.character(year),
@@ -110,15 +128,16 @@ cost_bar_plot <- function(property_raw_file, nickname){
 #monthly income
 
 
-net_income_plot <- function(property_raw_file, nickname, startdate, enddate, sum_property_md_lookup_clean){
+net_income_plot <- function(property_raw_file, startdate, enddate, sum_property_md_lookup_clean){
 
-  all_monthly_summary <- net_income_summary(monthly_cost_summary(property_raw_file, nickname), sum_property_md_lookup_clean)
+  all_monthly_summary <- net_income_summary(monthly_cost_summary(property_raw_file), sum_property_md_lookup_clean)
 
-  appropriate_color <- property_colours$colour[which(property_colours$PropertyNickname == nickname)]
+  #appropriate_color <- property_colours$colour[which(property_colours$PropertyNickname == nickname)]
+  appropriate_color <- "darkblue"
 
   plot <- ggplot() +
     geom_line(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
-              size = 1, color = appropriate_color) +
+              linewidth = 1, color = appropriate_color) +
     geom_point(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
                size = 2, color = appropriate_color )+
     geom_hline(yintercept=0)+
