@@ -105,7 +105,7 @@ cost_bar_plot <- function(property_raw_file, year, costType){
   if (costType != "all"){
 
     property_raw_file <- property_raw_file %>%
-      filter(Type == TypeAndInfo)
+      filter(TypeAndInfo == costType)
 
   }
 
@@ -163,40 +163,9 @@ net_income_plot <- function(property_raw_file, startdate, enddate, sum_property_
 
 
 
+average_monthly_rent <- all_monthly_summary %>%
+  group_by(year) %>%
+  summarise(mean = mean(net_monthly_income))
 
-# ggplot() +
-#   geom_line(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income ), size = 1, color = "red") +
-#   geom_point(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),  size = 2, color = "red" )+
-#   geom_hline(yintercept=0)+
-#   scale_x_date(name = "Date", date_breaks = "1 year", date_minor_breaks = "2 month", date_labels = "%Y %b",
-#                limits = c(as.Date("2022-03-01"), as.Date("2022-12-01"))) +
-#   theme_bw() +
-#   theme(panel.grid.minor.y = element_blank())
-
-
-
-
-
-
-
-#
-# hc_all_monthly_summary <- all_monthly_summary %>%
-#   select(Date, net_monthly_income) %>%
-#   mutate(Date = lubridate::ymd(Date))
-#
-# highcharter::highchart(type = "stock") %>%
-#   highcharter::hc_add_series(highcharter::hcaes(x = as.Date(all_monthly_summary$Date),
-#                                                 y = all_monthly_summary$net_monthly_income))
-#
-#
-#
-# all_monthly_summary$Date <- lubridate::ymd(all_monthly_summary$Date)
-#
-# all_monthly_summary %>%
-#   highcharter::hchart(.,
-#                       type = "line",
-#                       hcaes(x = Date,
-#                             y = net_monthly_income))
-#
 
 
