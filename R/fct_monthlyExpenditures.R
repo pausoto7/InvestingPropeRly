@@ -14,6 +14,7 @@ data('property_md_lookup')
 
 
 monthly_cost_summary <- function(property_raw_file){
+  print("Starting monthly_cost_summary function")
 
   monthly_cost_df <- property_raw_file %>%
     filter(Date > as.Date("2021-07-01")) %>%
@@ -50,6 +51,7 @@ full_month_to_abbrev <- function(full_month_name) {
 }
 
 create_clean_lookup <- function(property_md_lookup){
+  print("Starting create_clean_lookup function")
 
   sum_property_md_lookup <- property_md_lookup %>%
     group_by(month, PropertyNickname, Year) %>%
@@ -68,6 +70,10 @@ create_clean_lookup <- function(property_md_lookup){
 
 
 net_income_summary <- function(monthly_cost_df, sum_property_md_lookup_clean){
+  print("Starting net_income_summary function")
+
+
+  sum_property_md_lookup_clean <- create_clean_lookup(property_md_lookup)
 
   sum_property_rents <- sum_property_md_lookup_clean %>%
     group_by(year, month) %>%
@@ -89,10 +95,9 @@ property_colours <- data.frame(PropertyNickname = c("Woodward", "Murphy", "Home"
 
 
 
-# monthly cost
 
-cost_bar_plot <- function(property_raw_file, year, costType){
-
+filtered_property_raw <- function(property_raw_file, year, costType){
+  print("Starting filtered_property_raw function")
 
   if (year != "all"){
 
@@ -100,6 +105,9 @@ cost_bar_plot <- function(property_raw_file, year, costType){
       mutate(rentYear = lubridate::year(Date)) %>%
       filter(rentYear == year)
 
+    print("Only getting data for one year")
+  }else{
+    print("Property data all years")
   }
 
   if (costType != "all"){
@@ -107,10 +115,23 @@ cost_bar_plot <- function(property_raw_file, year, costType){
     property_raw_file <- property_raw_file %>%
       filter(TypeAndInfo == costType)
 
+    print("Filtering for single cost type")
+  }else{
+    print("All cost types")
+
   }
+  return(property_raw_file)
+}
 
 
-  monthly_cost_df <- monthly_cost_summary(property_raw_file)
+
+# monthly cost
+
+cost_bar_plot <- function(filtered_property_raw_df, year, costType){
+  print("Starting cost_bar_plot function")
+
+
+  monthly_cost_df <- monthly_cost_summary(filtered_property_raw_df)
 
   ggplot() +
     geom_col(data = monthly_cost_df, aes(x = month, y = costs_total, group= as.character(year),
@@ -128,11 +149,14 @@ cost_bar_plot <- function(property_raw_file, year, costType){
 #monthly income
 
 
-net_income_plot <- function(property_raw_file, startdate, enddate, sum_property_md_lookup_clean){
+net_income_plot <- function(filtered_property_raw_df, startdate, enddate, sum_property_md_lookup_clean){
+  print("Starting net_income_plot function")
 
-  all_monthly_summary <- net_income_summary(monthly_cost_summary(property_raw_file), sum_property_md_lookup_clean)
+  all_monthly_summary <- net_income_summary(monthly_cost_summary(filtered_property_raw_df), sum_property_md_lookup_clean)
 
-  #appropriate_color <- property_colours$colour[which(property_colours$PropertyNickname == nickname)]
+
+  #startdate <- as.Date("2021-01-01")
+  #enddate <- as.Date("2023-12-31")
   appropriate_color <- "darkblue"
 
   plot <- ggplot() +
@@ -163,9 +187,9 @@ net_income_plot <- function(property_raw_file, startdate, enddate, sum_property_
 
 
 
-average_monthly_rent <- all_monthly_summary %>%
-  group_by(year) %>%
-  summarise(mean = mean(net_monthly_income))
-
-
+# average_monthly_rent <- all_monthly_summary %>%
+#   group_by(year) %>%
+#   summarise(mean = mean(net_monthly_income))
+#
+#
 
