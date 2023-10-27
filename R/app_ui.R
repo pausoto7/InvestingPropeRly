@@ -11,17 +11,48 @@
 
 
 
-
-app_ui <- function(request) {
-  tagList(
-    # Leave this function for adding external resources
-    golem_add_external_resources(),
-    # Your application UI logic
-    fluidPage(
-      h1("InvestingPropeRly")
+# UI definition
+mod_landing_page_ui <- fluidPage(
+  shinydashboard::dashboardSidebar(),
+  fluidRow(
+    column(4,
+           "Map",
+           selectInput(inputId = "NicknameID",
+                       label = "Select property nickname name",
+                       choices = c("Woodward", "Murphy", "Home")
+           )
+    ),
+    column(8,
+           "IPM Total Herd Population",
+           uiOutput("daterange"),
+           selectInput("year", "Select a Year:",
+                       choices = c("all", 2020:2030),
+                       selected = "all"
+           ),
+           checkboxGroupInput("costType", "Select Cost Type(s):",
+                              choices = c("all", unique(scotia_mortgage_doc$TypeAndInfo)),  # Use unique values from the "CostType" column
+                              selected = "all"  # Set the default selection
+           )
+    )
+  ),
+  fluidRow(
+    column(12,
+           "NetIncome",
+           plotly::plotlyOutput("linegraph")
+    )
+  ),
+  fluidRow(
+    column(4,
+           "Summary",
+           tableOutput("costdata")
+    ),
+    column(8,
+           "Monthly costs",
+           plotOutput("bargraph", click = "plot_click")
     )
   )
-}
+)
+
 
 #' Add external Resources to the Application
 #'
