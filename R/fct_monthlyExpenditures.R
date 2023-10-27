@@ -184,12 +184,3 @@ net_income_plot <- function(filtered_property_raw_df, startdate, enddate, sum_pr
   return(plot)
 }
 
-
-
-
-# average_monthly_rent <- all_monthly_summary %>%
-#   group_by(year) %>%
-#   summarise(mean = mean(net_monthly_income))
-#
-#
-
