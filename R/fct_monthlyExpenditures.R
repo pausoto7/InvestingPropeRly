@@ -6,13 +6,14 @@
 #'
 #' @noRd
 
-data('scotia_mortgage_doc')
-data('property_md_lookup')
+
 
 # property_raw_file <-scotia_mortgage_doc
 # nickname <- "Woodward"
 
 
+# monthly_cost_summary
+# output is dataframe which adds all our costs together and gives a monthly total
 monthly_cost_summary <- function(property_raw_file){
   print("Starting monthly_cost_summary function")
 
@@ -30,48 +31,10 @@ return(monthly_cost_df)
 }
 
 
-
-full_month_to_abbrev <- function(full_month_name) {
-  month_mapping <- c(
-    "January" = "Jan",
-    "February" = "Feb",
-    "March" = "Mar",
-    "April" = "Apr",
-    "May" = "May",
-    "June" = "Jun",
-    "July" = "Jul",
-    "August" = "Aug",
-    "September" = "Sep",
-    "October" = "Oct",
-    "November" = "Nov",
-    "December" = "Dec"
-  )
-
-  return(month_mapping[full_month_name])
-}
-
-create_clean_lookup <- function(property_md_lookup){
-  print("Starting create_clean_lookup function")
-
-  sum_property_md_lookup <- property_md_lookup %>%
-    group_by(month, PropertyNickname, Year) %>%
-    mutate(TotalPropertyRent = sum(Rent))
-
-  sum_property_md_lookup_clean <- sum_property_md_lookup %>%
-    select( -UnitNum, -Rent) %>%
-    unique() %>%
-    rename(year = Year) %>%
-    mutate(month = full_month_to_abbrev(month))
-
-  return(sum_property_md_lookup_clean)
-}
-
-
-
-
-net_income_summary <- function(monthly_cost_df, sum_property_md_lookup_clean){
-  print("Starting net_income_summary function")
-
+# monthly_income
+# summarized rents for each property
+monthly_income <- function(monthly_cost_df, sum_property_md_lookup_clean){
+  print("Starting monthly_income function")
 
   sum_property_md_lookup_clean <- create_clean_lookup(property_md_lookup)
 
@@ -79,8 +42,7 @@ net_income_summary <- function(monthly_cost_df, sum_property_md_lookup_clean){
     group_by(year, month) %>%
     summarise(TotalMonthRent = sum(TotalPropertyRent))
 
-
-  PropertyManagerPercFee <- 0.09
+  PropertyManagerPercFee <- 0.093
 
   all_monthly_summary <- monthly_cost_df %>%
     left_join(sum_property_rents) %>%
@@ -90,37 +52,48 @@ net_income_summary <- function(monthly_cost_df, sum_property_md_lookup_clean){
 }
 
 
-property_colours <- data.frame(PropertyNickname = c("Woodward", "Murphy", "Home"),
-                               colour = c("deeppink4", "sienna3", "cyan4"))
-
-
-
 
 filtered_property_raw <- function(property_raw_file, year, costType){
   print("Starting filtered_property_raw function")
 
-  if (year != "all"){
+  if (length(costType)==1){
 
-    property_raw_file <- property_raw_file %>%
-      mutate(rentYear = lubridate::year(Date)) %>%
-      filter(rentYear == year)
 
-    print("Only getting data for one year")
+    if (year != "all"){
+
+      property_raw_file <- property_raw_file %>%
+        mutate(rentYear = lubridate::year(Date)) %>%
+        filter(rentYear == year)
+
+      print("Only getting data for one year")
+    }else{
+      print("Property data all years")
+    }
+
+    if (costType != "all"){
+
+      property_raw_file <- property_raw_file %>%
+        filter(TypeAndInfo == costType)
+
+      print("Filtering for single cost type")
+    }else{
+      print("All cost types")
+
+    }
+
+    return(property_raw_file)
+
+  }else if(length(costType) == 0){
+    cost_message_text <- "You have not picked any property costs. Please pick at least one to see information."
+    return(cost_message_text)
   }else{
-    print("Property data all years")
+    cost_message_text <- "You have picked more than one property cost type. At this time this is not possible. Please pick one for the time being"
+    return(cost_message_text)
+
   }
 
-  if (costType != "all"){
 
-    property_raw_file <- property_raw_file %>%
-      filter(TypeAndInfo == costType)
 
-    print("Filtering for single cost type")
-  }else{
-    print("All cost types")
-
-  }
-  return(property_raw_file)
 }
 
 
@@ -142,45 +115,5 @@ cost_bar_plot <- function(filtered_property_raw_df, year, costType){
     scale_y_reverse()+
     theme_bw()
 
-}
-
-
-
-#monthly income
-
-
-net_income_plot <- function(filtered_property_raw_df, startdate, enddate, sum_property_md_lookup_clean){
-  print("Starting net_income_plot function")
-
-  all_monthly_summary <- net_income_summary(monthly_cost_summary(filtered_property_raw_df), sum_property_md_lookup_clean)
-
-
-  #startdate <- as.Date("2021-01-01")
-  #enddate <- as.Date("2023-12-31")
-  appropriate_color <- "darkblue"
-
-  plot <- ggplot() +
-    geom_line(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
-              linewidth = 1, color = appropriate_color) +
-    geom_point(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
-               size = 2, color = appropriate_color )+
-    geom_hline(yintercept=0)+
-    geom_vline(xintercept = as.Date("2022-01-01")) +
-    annotate("text",x = as.Date("2021-12-27"), y =-500, label = "2022", angle = 90) +
-    geom_vline(xintercept = as.Date("2023-01-01")) +
-    annotate("text",x = as.Date("2022-12-27"), y =-500, label = "2023", angle = 90) +
-    scale_x_date(name = "Date",
-                 date_breaks = "2 months",
-                 date_minor_breaks = "1 month",
-                 date_labels = "%b\n%Y",
-                 limits = c(startdate, enddate)) +
-    scale_y_continuous(name = "Cost ($)") +
-    theme_bw() +
-    theme(panel.grid.minor.y = element_blank())
-
-  plot <- plot %>%
-    plotly::style(hoverinfo = "y")
-
-  return(plot)
 }
 

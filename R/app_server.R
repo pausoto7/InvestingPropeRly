@@ -29,6 +29,10 @@ mod_landing_page_server <- function(input, output, session) {
     net_income_plot(filtered_property_raw(scotia_mortgage_doc, input$year, input$costType), input$daterange[1], input$daterange[2], sum_property_md_lookup_clean)
   })
 
+  output$cost_message_output <- renderText({
+    cost_message_text
+  })
+
   output$bargraph <- renderPlot({
     cost_bar_plot(filtered_property_raw(scotia_mortgage_doc, input$year, input$costType))  # Using input$costType
   })
