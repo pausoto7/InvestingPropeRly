@@ -18,7 +18,7 @@ mod_landing_page_ui <- fluidPage(
                        choices = c("all", 2020:2030),
                        selected = "all"
            ),
-           selectInput("costType", "Select Cost Type:",
+           checkboxGroupInput("costType", "Select Cost Type(s):",
                        choices = c("all", unique(scotia_mortgage_doc$TypeAndInfo)),  # Use unique values from the "CostType" column
                        selected = "all"  # Set the default selection
            )
