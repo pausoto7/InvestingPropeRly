@@ -20,17 +20,22 @@ mod_landing_page_server <- function(input, output, session) {
     )
   })
 
-  output$scotia_mortgage_doc <- DT::renderDataTable({
-    # Create your datatable here
-    DT::datatable(scotia_mortgage_doc)
-  })
+  output$scotia_mortgage_doc <- DT::renderDT({
+                 DT::datatable(scotia_mortgage_doc,
+                               filter = "top",
+                               options = list(
+                                 dom = 'lrtip',
+                                 pageLength = 5
+                               ))})
+
+
 
   output$linegraph <- plotly::renderPlotly({
     net_income_plot(filtered_property_raw(scotia_mortgage_doc, input$year, input$costType), input$daterange[1], input$daterange[2], sum_property_md_lookup_clean)
   })
 
   output$cost_message_output <- renderText({
-    cost_message_text
+    get_cost_msg_txt(input$costType)
   })
 
   output$bargraph <- renderPlot({

@@ -18,7 +18,9 @@ scotia_mortgage_doc <- scotia_mortgage_doc_raw %>%
          OtherInfo != "ICBC",
          OtherInfo != "MB-CREDIT CARD/LOC PAY",
          Type != "WITHDRAWAL") %>%
-  mutate(TypeAndInfo = paste(Type, OtherInfo))
+  mutate(TypeAndInfo = paste(Type, OtherInfo)) %>%
+  dplyr::select(-c("Dash"))
+
 
 
 usethis::use_data(scotia_mortgage_doc, overwrite = TRUE)

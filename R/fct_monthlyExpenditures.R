@@ -51,48 +51,50 @@ monthly_income <- function(monthly_cost_df, sum_property_md_lookup_clean){
   return(all_monthly_summary)
 }
 
+get_cost_msg_txt <- function(costType){
+  if (length(costType)==1){
+    cost_message_text <- "testing = 1"
+  }else if(length(costType) == 0){
+    cost_message_text <- "You have not picked any property costs. Please pick at least one to see information."
+  }else if(length(costType) > 1){
+    cost_message_text <- "You have picked more than one property cost type. At this time this is not possible. Please pick one for the time being"
+  }else{
+    cost_message_text <- "testing"
+  }
+
+  return(cost_message_text)
+
+}
 
 
 filtered_property_raw <- function(property_raw_file, year, costType){
   print("Starting filtered_property_raw function")
 
-  if (length(costType)==1){
 
 
-    if (year != "all"){
+  if (year != "all"){
 
-      property_raw_file <- property_raw_file %>%
-        mutate(rentYear = lubridate::year(Date)) %>%
-        filter(rentYear == year)
+    property_raw_file <- property_raw_file %>%
+      mutate(rentYear = lubridate::year(Date)) %>%
+      filter(rentYear == year)
 
-      print("Only getting data for one year")
-    }else{
-      print("Property data all years")
-    }
-
-    if (costType != "all"){
-
-      property_raw_file <- property_raw_file %>%
-        filter(TypeAndInfo == costType)
-
-      print("Filtering for single cost type")
-    }else{
-      print("All cost types")
-
-    }
-
-    return(property_raw_file)
-
-  }else if(length(costType) == 0){
-    cost_message_text <- "You have not picked any property costs. Please pick at least one to see information."
-    return(cost_message_text)
+    print("Only getting data for one year")
   }else{
-    cost_message_text <- "You have picked more than one property cost type. At this time this is not possible. Please pick one for the time being"
-    return(cost_message_text)
+    print("Property data all years")
+  }
+
+  if (costType != "all"){
+
+    property_raw_file <- property_raw_file %>%
+      filter(TypeAndInfo == costType)
+
+    print("Filtering for single cost type")
+  }else{
+    print("All cost types")
 
   }
 
-
+  return(property_raw_file)
 
 }
 
