@@ -30,8 +30,8 @@ mod_landing_page_server <- function(input, output, session) {
 
 
 
-  output$linegraph <- plotly::renderPlotly({
-    net_income_plot(filtered_property_raw(scotia_mortgage_doc, input$year, input$costType), input$daterange[1], input$daterange[2], sum_property_md_lookup_clean)
+  output$net_income_linegraph <- plotly::renderPlotly({
+    net_income_plot(filtered_property_raw(scotia_mortgage_doc, input$year, input$costType), sum_property_md_lookup_clean)
   })
 
   output$cost_message_output <- renderText({

@@ -10,7 +10,7 @@
 
 mod_landing_page_ui <- fluidPage(
 
-  titlePanel("Malaria facility visualisation app"),
+  titlePanel("Investment Property Visualization App."),
 
   sidebarLayout(
 
@@ -24,7 +24,7 @@ mod_landing_page_ui <- fluidPage(
 
       # selector for
       selectInput("year", "Select a Year:",
-                  choices = c("all", 2020:2030),
+                  choices = c("all", unique(property_md_lookup$Year)),
                   selected = "all"
       ),
 
@@ -40,7 +40,7 @@ mod_landing_page_ui <- fluidPage(
         type = "tabs",
         tabPanel(
           "Net Cost",
-          plotly::plotlyOutput("linegraph"),
+          plotly::plotlyOutput("net_income_linegraph"),
           #DT::dataTableOutput("scotia_mortgage_doc"),
           DT::DTOutput('scotia_mortgage_doc'),
           shiny::verbatimTextOutput("cost_message_output")

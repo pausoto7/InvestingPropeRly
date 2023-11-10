@@ -71,7 +71,6 @@ filtered_property_raw <- function(property_raw_file, year, costType){
   print("Starting filtered_property_raw function")
 
 
-
   if (year != "all"){
 
     property_raw_file <- property_raw_file %>%
