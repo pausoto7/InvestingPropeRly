@@ -85,13 +85,11 @@ filtered_property_raw <- function(property_raw_file, year, costType){
 
 
   if (any(costType=="all")){
-
     print("All cost types")
 
 
   }else{
     property_raw_file <- property_raw_file[property_raw_file$TypeAndInfo %in% costType, ]
-
     print("select one to many cost types")
   }
 

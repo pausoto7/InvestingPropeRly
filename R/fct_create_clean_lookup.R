@@ -26,6 +26,16 @@ create_clean_lookup <- function(property_md_lookup){
 
 
 
+doc_for_presentation <- function(bank_document){
+
+  bank_document_cleaned <- bank_document %>%
+    dplyr::mutate(Year = lubridate::year(Date),
+                  Month = lubridate::month(Date), .before = "Date") %>%
+    dplyr::mutate(Month = month_number_to_name(as.numeric(Month)))
+
+
+}
+
 
 
 
