@@ -70,7 +70,6 @@ get_cost_msg_txt <- function(costType){
 filtered_property_raw <- function(property_raw_file, year, costType){
   print("Starting filtered_property_raw function")
 
-
   if (year != "all"){
 
     property_raw_file <- property_raw_file %>%
@@ -82,15 +81,18 @@ filtered_property_raw <- function(property_raw_file, year, costType){
     print("Property data all years")
   }
 
-  if (costType != "all"){
+  print(costType)
 
-    property_raw_file <- property_raw_file %>%
-      filter(TypeAndInfo == costType)
 
-    print("Filtering for single cost type")
-  }else{
+  if (any(costType=="all")){
+
     print("All cost types")
 
+
+  }else{
+    property_raw_file <- property_raw_file[property_raw_file$TypeAndInfo %in% costType, ]
+
+    print("select one to many cost types")
   }
 
   return(property_raw_file)
@@ -99,22 +101,7 @@ filtered_property_raw <- function(property_raw_file, year, costType){
 
 
 
-# monthly cost
-
-cost_bar_plot <- function(filtered_property_raw_df, year, costType){
-  print("Starting cost_bar_plot function")
 
 
-  monthly_cost_df <- monthly_cost_summary(filtered_property_raw_df)
 
-  ggplot() +
-    geom_col(data = monthly_cost_df, aes(x = month, y = costs_total, group= as.character(year),
-                                         fill = as.character(year)),
-             position = position_dodge2(width = 1, preserve = "single"),
-             color = "black") +
-    scale_fill_brewer(palette = "Spectral") +
-    scale_y_reverse()+
-    theme_bw()
-
-}
 

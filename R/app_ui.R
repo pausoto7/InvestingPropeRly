@@ -41,15 +41,16 @@ mod_landing_page_ui <- fluidPage(
         tabPanel(
           "Net Cost",
           plotly::plotlyOutput("net_income_linegraph"),
-          #DT::dataTableOutput("scotia_mortgage_doc"),
           DT::DTOutput('scotia_mortgage_doc'),
           shiny::verbatimTextOutput("cost_message_output")
+          #shiny::verbatimTextOutput("cost_output")
+
 
         ),
 
         tabPanel(
           "Monthly Costs",
-          shiny::plotOutput("bargraph", click = "plot_click")
+          plotly::plotlyOutput("cost_linegraph")
         )
       )
       # br(),

@@ -22,7 +22,7 @@ net_income_plot <- function(filtered_property_raw_df, sum_property_md_lookup_cle
 
   plot <- ggplot() +
     geom_hline(yintercept = absolute_average, color = "orchid4", linewidth = 1) +
-        geom_line(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
+    geom_line(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
               linewidth = 1, color = appropriate_color) +
     geom_point(data = all_monthly_summary, aes(x = lubridate::ymd(Date), y = net_monthly_income),
                size = 2, color = appropriate_color )+

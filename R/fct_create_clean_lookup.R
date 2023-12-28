@@ -12,11 +12,8 @@
 create_clean_lookup <- function(property_md_lookup){
   print("Starting create_clean_lookup function")
 
-  property_md_lookup_long <- property_md_lookup %>%
-    tidyr::pivot_longer(January:December, names_to = "month", values_to = "Rent")
 
-
-  sum_property_md_lookup_long <- property_md_lookup_long %>%
+  sum_property_md_lookup_long <- property_md_lookup %>%
     group_by(month, PropertyNickname, Year) %>%
     summarise(TotalPropertyRent = sum(Rent))
 
